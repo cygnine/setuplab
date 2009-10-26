@@ -18,6 +18,8 @@ addpath(pwd);
 global packages
 
 names = find_modules(parent_package_directory);
+presdir = pwd;
+cd(parent_package_directory);
 
 % Need labtools to continue
 flags = strcmpi('labtools', names);
@@ -37,5 +39,7 @@ for q = 1:length(names)
 end
 
 fprintf('Setup completed successfully\n');
+
+cd(presdir);
 
 rmpath(pwd);
