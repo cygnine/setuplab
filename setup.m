@@ -6,6 +6,9 @@ function[] = setup(varargin)
 %     packages/modules. If not given, the packages are assumed to be in a
 %     directory parallel to these setup tools.
 
+clear global packages;
+clear classes;
+
 if nargin==0
   parent_package_directory = '..';
 else
@@ -20,6 +23,8 @@ global packages
 names = find_modules(parent_package_directory);
 presdir = pwd;
 cd(parent_package_directory);
+
+addpath('global');  % Allows Pythonic imports/"from" commands
 
 % Need labtools to continue
 flags = strcmpi('labtools', names);

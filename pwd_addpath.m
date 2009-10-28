@@ -1,6 +1,12 @@
-function[] = pwd_addpath(subdir)
+function[] = pwd_addpath(varargin)
 %  pwd_addpath -- modifies global PATH
 %
-%      Appends 'pwd + subdir' to the matlab global path
+% pwd_addpath(subdir1, subdir2, ...)
+%
+%      Appends 'pwd + subdir' to the matlab global path for each subdir in
+%      varargin.
 
-addpath(fullfile(pwd,subdir));
+for q = 1:length(varargin)
+  subdir = varargin{q};
+  addpath(fullfile(pwd,subdir));
+end
