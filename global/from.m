@@ -59,10 +59,10 @@ for q = 1:length(varargin)
     if strcmp(class(node), 'FunctionNode');
       node = node.handle;
     end
-    assignin('caller', varargin{q}, node);
   catch
     str1 = 'Cannot find package/module/function ';
     str2 = ' in package ';
     error([str1 varargin{q} str2 package_name]);
   end
+  assignin('caller', varargin{q}, node);
 end

@@ -24,7 +24,8 @@ names = find_modules(parent_package_directory);
 presdir = pwd;
 cd(parent_package_directory);
 
-addpath('global');  % Allows Pythonic imports/"from" commands
+[pathstr, garbage, garbage, garbage] = fileparts(mfilename('fullpath'));
+addpath(fullfile(pathstr, 'global'));  % Allows Pythonic imports/"from" commands
 
 % Need labtools to continue
 flags = strcmpi('labtools', names);
