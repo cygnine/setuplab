@@ -1,45 +1,75 @@
 Contents:
-1.) License
-2.) Setup (PLEASE READ)
+1.) About
+2.) Setup + Install
 3.) Intended audience
 4.) Development history
-5.) Contact
+5.) License
+6.) Contact
 
 ________________________________________________________________________________
 
-                            1.) License
+                            1.) About
 ________________________________________________________________________________
 
-These Matlab files are released under the MIT License. See the LICENSE file in
-this directory.
+This is a collection of tools meant to shoehorn the way Matlab works into a more
+Python-ic behavior. Setuplab provides the ability to write code like:
 
-Basically do what you want, and don't sue me. And give me credit if any is due.
+>> imp speclab                        % imports the package speclab
+                                      % variable 'speclab' is created
+
+>> from speclab.orthopoly1d jacobi    % imports the sub-package jacobi
+                                      % variable 'jacobi' is created
+
+>> opoly = imp_as speclab.orthopoly1d % imports orthopoly1d into variable opoly
+
+>> gq = from_as speclab.orthopoly1d.jacobi.quad.gauss_quadrature
+                                    % imports gauss_quadrature into variable gq
+
+>> from speclab.orthopoly1d.jacobi.quad *  % imports ALL functions from the
+                                           % specified submodule.
+
+The "from_as" and "imp_as" functions are nicely-behaved functions. The "imp" and
+"from" functions do nasty things using "assignin" statements, which will cause
+errors if Matlab's optimizer flags one of your functions as a static workspace
+and then you try to dynamically create variables using "imp" and "from".
+
+The objects that are imported to the specified variables depend on how your
+init__.m files are written (see the setup+installation section). For a nice
+object-oriented way of importing functions, download+install the labtools
+package.
 
 ________________________________________________________________________________
 
-                            2.) Setup
+                            2.) Setup + Install
 ________________________________________________________________________________
 
-This is a collection of tools for use regarding other Matlab packages (e.g.
-Speclab). In itself it is just a collection of perhaps-useful files. The file
-setup.m will run through all subdirectories found and if a "handles__.m" file
-exists in the subdirectory, it will run through all m-files found in that
-subdirectory and add them as function handles to a matlab-global variable called
-"handles". The handles__.m file in each subdirectory also specifies which
-subdirectories of that subdirectory are to be traversed. 
+The file setup.m is the only "installation" required. Just cd into the directory
+and run 
 
-You may just run 
 >> setup;
-at the command line, and it will perform the necessary operations. The common
-subdirectory contains some m-files that might be useful for programming in
-Matlab in general.
+
+from the Matlab command prompt. You can then cd out of the directory and work as
+normal. 
+
+Setuplab does two things:
+- crawls through parallel directories ("packages") and searches for "init__.m"
+  files in those directories. If it does not find one, the directory is ignored.
+  If it does find such a file, it runs the file and stores the output in the
+  field of a struct with fieldname equal to the directory name.
+- adds the setuplab/global directory to the global Matlab path. This makes some
+  Pythonic from/import-like statements available.
+
+If a package "labtools" is found, it is parsed first because the contents of
+that package may be used by other packages.
+
+For an example of an init__.m file, look at labtools, shapelab, or speclab.
 
 ________________________________________________________________________________
 
                             3.) Intended audience
 ________________________________________________________________________________
 
-This module is for use primarily in tandem with another of my released modules,
+This module is for use primarily in tandem with another Pythonic Matlab package,
 e.g. Speclab. It is not really meant to be stand-alone.
 
 ________________________________________________________________________________
@@ -51,19 +81,30 @@ If you'd like the whole development history for this collection, you'll need the
 open-source "distributed version control system" called "git". 
 
 You can clone the repo with the command:
-git clone git://github.com/cygnine/CommonMatlab.git
+git clone git://github.com/cygnine/setuplab.git
 
-You may navigate a web browser to http://www.github.com/cygnine/CommonMatlab and
+You may navigate a web browser to http://www.github.com/cygnine/setuplab and
 github will show a pretty GUI of the development history and included files.
 You can also download a tarball directly from github of each repo, but the
 tarball won't have the history. 
 
 ________________________________________________________________________________
+
+                            5.) License
+________________________________________________________________________________
+
+These Matlab files are released under the MIT License. See the LICENSE file in
+this directory.
+
+Basically do what you want, and don't sue me. And give me credit if any is due.
+
+
+________________________________________________________________________________
                             
-                            5.) Contact
+                            6.) Contact
 ________________________________________________________________________________
 
 Any comments/suggestions/improvements are welcome. 
 
 Akil Narayan
-anaray@dam.brown.edu
+akil@purdue.edu
