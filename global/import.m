@@ -1,15 +1,28 @@
-function[] = imp(varargin)
+function[] = import(varargin)
 % imp -- Pythonic import of packages in Matlab
 %
 % [] = imp(package_name1, package_name2, ...)
 %
 %     Adds all the packages specified to the caller's workspace named with the
-%     name of the package.
+%     name of the package. This function overloads the Matlab's builtin function
+%     'import'. The builtin function takes precedence when 'import' is used at
+%     the command line; if the builtin command fails, this function is called.
 %
 %     Examples:
-%        imp speclab
-%        imp speclab.orthopoly1d
-%        imp speclab.orthopoly1d.jacobi as jac
+%        import speclab
+%        import speclab.orthopoly1d
+%        import speclab.orthopoly1d.jacobi as jac
+
+try 
+  string = 'builtin(''import'', ';
+  for q = 1:nargin
+    string = strcat(string, varargin{q});
+  end
+  string = strcat(string, ')');
+  evalin('caller', string);
+  return
+catch
+end
 
 global packages;
 dissect = packages.labtools.namestring_dissect;

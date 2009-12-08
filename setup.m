@@ -7,7 +7,8 @@ function[] = setup(varargin)
 %     directory parallel to these setup tools.
 
 clear global packages;
-clear classes;
+clear all
+restoredefaultpath
 
 if nargin==0
   parent_package_directory = '..';
@@ -15,8 +16,8 @@ else
   parent_package_directory = varargin{1};
 end
 
-% Temporarily add pwd to the path (for utility files)
-addpath(pwd);
+[pathstr, garbage, garbage, garbage] = fileparts(mfilename('fullpath'));
+addpath(fullfile(pathstr, 'global_temp'));  % Temporary setuplab stuff
 
 global packages
 
@@ -24,19 +25,18 @@ names = find_modules(parent_package_directory);
 presdir = pwd;
 cd(parent_package_directory);
 
-[pathstr, garbage, garbage, garbage] = fileparts(mfilename('fullpath'));
-addpath(fullfile(pathstr, 'global'));  % Allows Pythonic imports/"from" commands
+addpath(fullfile(pathstr, 'global'));  % All the Python magic
 
-% Need labtools to continue
-flags = strcmpi('labtools', names);
+% Add setuplab first so FunctionNode is available
+flags = strcmpi('setuplab', names);
 if any(flags)
   q = find(flags);
-  packages.labtools = matlab_import(names{q});
+  packages.setuplab = matlab_import(names{q});
   names(q) = [];
-  fprintf('Found labtools\n');
+  fprintf('Found setuplab\n');
 else
   rmpath(pwd);
-  Error('You must have labtools installed...it is required for all packages');
+  error('You must have setuplab installed...it is required for all packages');
 end
 
 for q = 1:length(names)
@@ -48,4 +48,4 @@ fprintf('Setup completed successfully\n');
 
 cd(presdir);
 
-rmpath(pwd);
+rmpath(fullfile(pathstr, 'global_temp'));  % Temporary setuplab stuff
