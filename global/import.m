@@ -1,5 +1,5 @@
 function[] = import(varargin)
-% imp -- Pythonic import of packages in Matlab
+% import -- Pythonic import of packages in Matlab
 %
 % [] = imp(package_name1, package_name2, ...)
 %
@@ -13,16 +13,17 @@ function[] = import(varargin)
 %        import speclab.orthopoly1d
 %        import speclab.orthopoly1d.jacobi as jac
 
-try 
-  string = 'builtin(''import'', ';
-  for q = 1:nargin
-    string = strcat(string, varargin{q});
-  end
-  string = strcat(string, ')');
-  evalin('caller', string);
-  return
-catch
-end
+% Until the Mathworks cleans up their packages system, the below doesn't work
+%try 
+%  string = 'builtin(''import'', ';
+%  for q = 1:nargin
+%    string = strcat(string, '''', varargin{q}, '''');
+%  end
+%  string = strcat(string, ')');
+%  evalin('caller', string);
+%  return
+%catch
+%end
 
 global packages;
 dissect = packages.labtools.namestring_dissect;
@@ -69,11 +70,11 @@ else
         temp = getfield(temp, package_name{qq});
       catch
         str1 = 'Cannot find package/module/function ';
-        if length(qq)==1
+        if qq==1
           all_str = [str1 package_name{1}];
         else
           str2 = ' in package ';
-          str3 = construct('packages', package_name{1:qq-1});
+          str3 = construct(package_name{1:qq-1});
           all_str = [str1 package_name{qq} str2 str3];
         end
         error(all_str);

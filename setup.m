@@ -10,6 +10,12 @@ clear global packages;
 clear all
 restoredefaultpath
 
+warning('off', 'MATLAB:dispatcher:nameConflict');
+fprintf('     ----------------------------------------------------------------------     \n')
+fprintf(['     Warning: the following builtin MATLAB function is unavailable: import\n', ...
+         '              Use builtin(''import'', str1, str2, ...).\n']);
+fprintf('     ----------------------------------------------------------------------     \n')
+
 if nargin==0
   parent_package_directory = '..';
 else
@@ -49,3 +55,5 @@ fprintf('Setup completed successfully\n');
 cd(presdir);
 
 rmpath(fullfile(pathstr, 'global_temp'));  % Temporary setuplab stuff
+
+warning('on', 'MATLAB:dispatcher:nameConflict');
