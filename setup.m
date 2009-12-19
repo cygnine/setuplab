@@ -12,8 +12,9 @@ restoredefaultpath
 
 warning('off', 'MATLAB:dispatcher:nameConflict');
 fprintf('     ----------------------------------------------------------------------     \n')
-fprintf(['     Warning: the following builtin MATLAB function is unavailable: import\n', ...
-         '              Use builtin(''import'', str1, str2, ...).\n']);
+fprintf('                           Warning from setuplab:                               \n')
+fprintf(['        The following builtin MATLAB function is unavailable: import\n', ...
+         '        Use instead builtin(''import'', str1, str2, ...).\n']);
 fprintf('     ----------------------------------------------------------------------     \n')
 
 if nargin==0
