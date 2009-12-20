@@ -51,6 +51,10 @@ for q = 1:length(names)
   packages.(names{q}) = matlab_import(names{q});
 end
 
+%%%%% For legacy code:
+global handles
+handles = extract_handles(packages);
+
 fprintf('Setup completed successfully\n');
 
 cd(presdir);
