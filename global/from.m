@@ -51,6 +51,8 @@ import_package('labtools');
 namestring = labtools.namestring_dissect;
 global packages;
 
+stack_length = length(dbstack(1));
+
 if nargin==1
   import_package(package_name);
   varvalue = eval(package_name);    % uuuuuuugly
@@ -116,7 +118,7 @@ if nargin==3
     names = fieldnames(temp);
     for q=1:length(names);
       value = getfield(temp,names{q});
-      if strcmp(class(value), 'FunctionNode');
+      if strcmp(class(value), 'FunctionNode') & stack_length>0
         value = value.handle;
       end
       assignin('caller', names{q}, value);
@@ -126,7 +128,7 @@ if nargin==3
     try
       %node = getfield(temp, varargin{q});
       node = temp.(varargin{2});
-      if strcmp(class(node), 'FunctionNode');
+      if strcmp(class(node), 'FunctionNode') & stack_length>0
         node = node.handle;
       end
     catch
@@ -152,7 +154,7 @@ if any(flags)
 
     try
       node = temp.(varargin{2});
-      if strcmp(class(node), 'FunctionNode');
+      if strcmp(class(node), 'FunctionNode') & stack_length>0
         node = node.handle;
       end
     catch
@@ -168,7 +170,7 @@ else  % there's no 'as', just import whatever people tell us to
   for q = 2:length(varargin)
     try
       node = getfield(temp, varargin{q});
-      if strcmp(class(node), 'FunctionNode');
+      if strcmp(class(node), 'FunctionNode') & stack_length>0
         node = node.handle;
       end
     catch
