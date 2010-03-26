@@ -13,9 +13,11 @@ handles = struct();
 temp = fieldnames(packs);
 for q = 1:length(temp)
   branch = getfield(packs, temp{q});
-  if isa(branch, 'struct')
-    handles = setfield(handles, temp{q}, extract_handles(branch));
-  else
-    handles = setfield(handles, temp{q}, branch.handle);
+  if not(strcmpi(temp{q}, {'deprecation_list__', 'warning__'}))
+    if isa(branch, 'struct')
+      handles = setfield(handles, temp{q}, extract_handles(branch));
+    else
+      handles = setfield(handles, temp{q}, branch.handle);
+    end
   end
 end

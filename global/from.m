@@ -1,4 +1,6 @@
 function[] = from(package_name,varargin)
+% from -- A Pythonic import statement implemented in Matlab
+%
 % [] = from(package_name, {name1, name2, ...})
 %
 %     Adds the function/modules specified in the varargin cell array to the
@@ -47,6 +49,10 @@ function[] = from(package_name,varargin)
 %     (This function, 'from', is relatively slow, especially if you run it a lot
 %     of times.)
 
+if not(isa(package_name, 'char'))
+  error('All inputs to this function must be strings');
+end
+
 import_package('labtools');
 namestring = labtools.namestring_dissect;
 global packages;
@@ -54,6 +60,7 @@ global packages;
 stack_length = length(dbstack(1));
 
 if nargin==1
+  deprecation_check(package_name);
   import_package(package_name);
   varvalue = eval(package_name);    % uuuuuuugly
 
@@ -66,28 +73,6 @@ if nargin==1
   assignin('caller', varname, varvalue);   
   return
 end
-
-% Old 'from shapelab *' syntax
-%
-%if nargin==2
-%  if varargin{1}=='*';
-%    names = namestring(package_name);
-%    temp = packages;
-%    for q = 1:length(names)
-%      temp = getfield(temp, names{q});
-%    end
-%    names = fieldnames(temp);
-%    for q=1:length(names);
-%      value = getfield(temp,names{q});
-%      if strcmp(class(value), 'FunctionNode');
-%        value = value.handle;
-%      end
-%      assignin('caller', names{q}, value);
-%    end
-%
-%    return
-%  end
-%end
 
 names = namestring(package_name);
 temp = packages;
@@ -128,6 +113,7 @@ if nargin==3
     try
       %node = getfield(temp, varargin{q});
       node = temp.(varargin{2});
+      deprecation_check(strcat(package_name, '.', varargin{2}));
       if strcmp(class(node), 'FunctionNode') & stack_length>0
         node = node.handle;
       end
@@ -154,6 +140,7 @@ if any(flags)
 
     try
       node = temp.(varargin{2});
+      deprecation_check(strcat(package_name, '.', varargin{2}));
       if strcmp(class(node), 'FunctionNode') & stack_length>0
         node = node.handle;
       end
@@ -170,6 +157,7 @@ else  % there's no 'as', just import whatever people tell us to
   for q = 2:length(varargin)
     try
       node = getfield(temp, varargin{q});
+      deprecation_check(strcat(package_name, '.', varargin{q}));
       if strcmp(class(node), 'FunctionNode') & stack_length>0
         node = node.handle;
       end

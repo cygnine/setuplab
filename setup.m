@@ -27,6 +27,7 @@ end
 addpath(fullfile(pathstr, 'global_temp'));  % Temporary setuplab stuff
 
 global packages
+packages = initialize_packages();
 
 names = find_modules(parent_package_directory);
 presdir = pwd;
