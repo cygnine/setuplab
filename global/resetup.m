@@ -14,7 +14,7 @@ fname = 'setuplab_dir_record.mat';
 
 save(fname, 'currdir');
 
-clear all; clear import; restoredefaultpath
+clear all; clear classes; clear import; restoredefaultpath
 setup;
 
 load setuplab_dir_record.mat

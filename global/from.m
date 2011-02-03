@@ -58,6 +58,9 @@ namestring = labtools.namestring_dissect;
 global packages;
 
 stack_length = length(dbstack(1));
+% Below or equal to stack_cutoff, the whole class instance is imported,
+% otherwise only the handle is imported.
+stack_cutoff = 1;
 
 if nargin==1
   deprecation_check(package_name);
@@ -103,7 +106,7 @@ if nargin==3
     names = fieldnames(temp);
     for q=1:length(names);
       value = getfield(temp,names{q});
-      if strcmp(class(value), 'FunctionNode') & stack_length>0
+      if strcmp(class(value), 'FunctionNode') & stack_length>stack_cutoff
         value = value.handle;
       end
       assignin('caller', names{q}, value);
@@ -114,7 +117,7 @@ if nargin==3
       %node = getfield(temp, varargin{q});
       node = temp.(varargin{2});
       deprecation_check(strcat(package_name, '.', varargin{2}));
-      if strcmp(class(node), 'FunctionNode') & stack_length>0
+      if strcmp(class(node), 'FunctionNode') & stack_length>stack_cutoff
         node = node.handle;
       end
     catch
@@ -141,7 +144,7 @@ if any(flags)
     try
       node = temp.(varargin{2});
       deprecation_check(strcat(package_name, '.', varargin{2}));
-      if strcmp(class(node), 'FunctionNode') & stack_length>0
+      if strcmp(class(node), 'FunctionNode') & stack_length>stack_cutoff
         node = node.handle;
       end
     catch
@@ -158,7 +161,7 @@ else  % there's no 'as', just import whatever people tell us to
     try
       node = getfield(temp, varargin{q});
       deprecation_check(strcat(package_name, '.', varargin{q}));
-      if strcmp(class(node), 'FunctionNode') & stack_length>0
+      if strcmp(class(node), 'FunctionNode') & stack_length>stack_cutoff
         node = node.handle;
       end
     catch
