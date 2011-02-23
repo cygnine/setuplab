@@ -11,14 +11,13 @@ clear all
 restoredefaultpath
 
 warning('off', 'MATLAB:dispatcher:nameConflict');
-%fprintf('     ----------------------------------------------------------------------     \n')
-%fprintf('                           Warning from setuplab:                               \n')
-%fprintf(['        The following builtin MATLAB function is unavailable: import\n', ...
-%         '        Use instead builtin(''import'', str1, str2, ...).\n']);
-%fprintf('     ----------------------------------------------------------------------     \n')
 
 if nargin==0
-  parent_package_directory = '..';
+  %parent_package_directory = '..';
+  parent_package_directory = mfilename('fullpath');
+  [parent_package_directory, garbage, garbage, garbage] = fileparts(parent_package_directory);
+  temp_ind = strfind(parent_package_directory, filesep);
+  parent_package_directory = parent_package_directory(1:temp_ind(end));
 else
   parent_package_directory = varargin{1};
 end
@@ -39,17 +38,21 @@ addpath(fullfile(pathstr, 'global'));  % All the Python magic
 flags = strcmpi('setuplab', names);
 if any(flags)
   q = find(flags);
-  packages.setuplab = matlab_import(names{q});
+  %packages.setuplab = matlab_import(names{q});
+  packages = add_module(packages, names(q));
+  %packages.setuplab = matlab_import(names{q});
   names(q) = [];
   fprintf('Found setuplab\n');
 else
-  rmpath(pwd);
-  error('You must have setuplab installed...it is required for all packages');
+  rmpath(fullfile(pathstr, 'global_temp'));
+  rmpath(fullfile(pathstr, 'global'));
+  error('You must have setuplab files available...they are required for all packages');
 end
 
 for q = 1:length(names)
   fprintf(['  Found ' names{q} '\n']);
-  packages.(names{q}) = matlab_import(names{q});
+  %packages.(names{q}) = matlab_import(names{q});
+  packages = add_module(packages, names(q));
 end
 
 %%%%% For legacy code:

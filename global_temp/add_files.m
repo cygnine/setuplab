@@ -1,5 +1,7 @@
-function[handles] = recurse_files(varargin);
-% recurse_files -- creates FunctionNode structure from m-files
+function[handles] = add_files(packages, varargin);
+% add_files -- creates FunctionNode structure from m-files
+%
+% packages = add_files(packages, varargin)
 %
 %     Traverses all m-files in the global directory string varargin{1} and
 %     returns a structure with FunctionNode vertices for them. If varargin{1} is

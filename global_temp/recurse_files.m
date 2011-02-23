@@ -9,8 +9,20 @@ presdir = pwd;
 
 if nargin==0
   pwdir = pwd;
-else
+  module_list = {};
+  module_names = cell([length(module_list) 1]);
+elseif nargin==1
   pwdir = varargin{1};
+  module_list = {};
+  module_names = cell([length(module_list) 1]);
+elseif nargin==2
+  pwdir = varargin{1};
+  module_list = varargin{2};
+  module_names = cell([length(module_list) 1]);
+elseif nargin==3
+  pwdir = varargin{1};
+  module_list = varargin{2};
+  module_names = varargin{3};
 end
 
 % Return empty list if subdir doesn't exist
@@ -36,6 +48,8 @@ for n = 1:length(mfile_list)
        FunctionNode(str2func(mfile_name), mfile_name, pwd));
   end
 end
+
+handles = add_module(handles, module_list, module_names);
 
 % Return to original path
 cd(presdir);
