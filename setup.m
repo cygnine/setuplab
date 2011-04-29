@@ -8,7 +8,7 @@ function[] = setup(varargin)
 
 clear global packages;
 clear all
-restoredefaultpath
+%restoredefaultpath
 
 warning('off', 'MATLAB:dispatcher:nameConflict');
 
