@@ -27,9 +27,9 @@ function[] = from(package_name,varargin)
 %
 %     Examples: (just like Python)
 %
-%       from speclab.orthopoly1d import jacobi
-%       from speclab.orthopoly1d import jacobi as jac
-%       from speclab.orthopoly1d import *
+%       from speclab.orthopoly import jacobi
+%       from speclab.orthopoly import jacobi as jac
+%       from speclab.orthopoly import *
 %
 %     NB: Matlab does some `smart' optimization, and part of this is occasional
 %     `freezing' of workspaces inside functions (i.e. static). However, since
@@ -41,7 +41,7 @@ function[] = from(package_name,varargin)
 %
 %     persistent gq
 %     if isempty(gq)
-%       from speclab.orthopoly1d.jacobi.quad import gauss_quadrature as gq
+%       from speclab.orthopoly.jacobi.quad import gauss_quadrature as gq
 %     end
 %     
 %     The persistent statement announces the function name to Matlab, and the if
@@ -49,40 +49,20 @@ function[] = from(package_name,varargin)
 %     (This function, 'from', is relatively slow, especially if you run it a lot
 %     of times.)
 
+persistent packages
+if isempty(packages)
+  packages = FunctionTree.instance(0);
+  packages = packages.packages;
+end
+
 if not(isa(package_name, 'char'))
   error('All inputs to this function must be strings');
 end
-
-import_package('labtools');
-namestring = labtools.namestring_dissect;
-global packages;
 
 stack_length = length(dbstack(1));
 % Below or equal to stack_cutoff, the whole class instance is imported,
 % otherwise only the handle is imported.
 stack_cutoff = 1;
-
-if nargin==1
-  deprecation_check(package_name);
-  import_package(package_name);
-  varvalue = eval(package_name);    % uuuuuuugly
-
-  package_name = namestring(package_name);
-
-  for qq = length(package_name):-1:2
-    varvalue = struct(package_name{qq}, varvalue);
-  end
-  varname = package_name{1};
-  assignin('caller', varname, varvalue);   
-  return
-end
-
-names = namestring(package_name);
-temp = packages;
-for q = 1:length(names)
-  %temp = getfield(temp, names{q});
-  temp = temp.(names{q});
-end
 
 % varargin{1} should always be 'import'
 if not(strcmpi(varargin{1}, 'import'))
@@ -94,81 +74,91 @@ if nargin==2
   error(['You didn''t tell me what to import from ' package_name]);
 end
 
-if nargin==3
-  % We're only importing one `thing'. That `thing' may be *
-
-  if varargin{2}=='*';
-    names = namestring(package_name);
-    temp = packages;
-    for q = 1:length(names)
-      temp = getfield(temp, names{q});
-    end
-    names = fieldnames(temp);
-    for q=1:length(names);
-      value = getfield(temp,names{q});
-      if strcmp(class(value), 'FunctionNode') & stack_length>stack_cutoff
-        value = value.handle;
-      end
-      assignin('caller', names{q}, value);
-    end
-
-  else
-    try
-      %node = getfield(temp, varargin{q});
-      node = temp.(varargin{2});
-      deprecation_check(strcat(package_name, '.', varargin{2}));
-      if strcmp(class(node), 'FunctionNode') & stack_length>stack_cutoff
-        node = node.handle;
-      end
-    catch
-      str1 = 'Cannot find package/module/function ';
-      str2 = ' in package ';
-      error([str1 varargin{2} str2 package_name]);
-    end
-    assignin('caller', varargin{2}, node);
-
-  end
-
-  return
+dissection = namestring_dissect(package_name);
+try
+  %thispack = packages.(package_name);
+  thispack = getfield(packages, dissection{:});
+catch
+  errmsg = ['Cannot find package named ', package_name ...
+  '. Did you copy the package directory to a location parallel to setuplab?'];
+  error(errmsg)
 end
 
-% Now if there's an 'as', then nargin==5
-flags = strcmpi('as', varargin(3:end));
-if any(flags)
-  if not(flags(1))
-    error('You can''t use ''as'' when importing more than one thing');
-  elseif nargin~=5
-    error('You can''t assign to multiple names with ''as''');
-  else  % finally, we're in business
+if nargin==3  % We're only importing one `thing'. That `thing' may be *
+  if varargin{2}=='*'; 
+    names = fieldnames(thispack);
+  else
+    names = varargin(2);
+  end
+elseif (nargin==5) && strcmp(varargin{3}, 'as');
+  % Only import one thing
+  names = varargin(2);
+else % This must just be a long list of stuff to import 
+  names = varargin(2:nargin);
+end
 
+% Now unless we're importing 'as' stuff, we just have to assignin('caller')
+if (nargin==5) && strcmp(varargin{3}, 'as');
+  try
+    node = getfield(thispack, names{1});
+  catch
+    str1 = 'Cannot find package/module/function ';
+    str2 = ' in package ';
+    error([str1 names{2} str2 package_name]);
+  end
+  assignin('caller', varargin{4}, node);
+else
+  % We just have to loop over everything
+  for q = 1:length(names)
     try
-      node = temp.(varargin{2});
-      deprecation_check(strcat(package_name, '.', varargin{2}));
+      node = getfield(thispack, names{q});
+
       if strcmp(class(node), 'FunctionNode') & stack_length>stack_cutoff
         node = node.handle;
       end
+
+      nodes{q} = node;
     catch
       str1 = 'Cannot find package/module/function ';
       str2 = ' in package ';
-      error([str1 varargin{2} str2 package_name]);
+      error([str1 names{2} str2 package_name]);
     end
-    assignin('caller', varargin{4}, node);
-
   end
-
-else  % there's no 'as', just import whatever people tell us to
-  for q = 2:length(varargin)
-    try
-      node = getfield(temp, varargin{q});
-      deprecation_check(strcat(package_name, '.', varargin{q}));
-      if strcmp(class(node), 'FunctionNode') & stack_length>stack_cutoff
-        node = node.handle;
-      end
-    catch
-      str1 = 'Cannot find package/module/function ';
-      str2 = ' in package ';
-      error([str1 varargin{q} str2 package_name]);
-    end
-    assignin('caller', varargin{q}, node);
+  for q = 1:length(names)
+    assignin('caller', names{q}, nodes{q});
   end
+end
+
+end
+
+% Nested function
+function[names] = namestring_dissect(name)
+% namestring_dissect -- dissects 'name.strings' into {'name', 'strings'}
+%
+% names = namestring_dissect(name)
+% 
+%     Performs the operation:
+%        'name.string.example' --->  {'name', 'string', 'example'}
+%
+%     The input name is a single string, the output names is a cell array with
+%     length equal to the (number of periods ('.') found in name) + 1.
+
+periods = strfind(name, '.');
+N = length(periods);
+names = cell([N+1 1]);
+
+if N==0
+  names = {name};
+  return;
+end
+
+names{1} = name(1:(periods(1)-1));
+
+if N>1
+  for q = 2:N
+    names{q} = name((periods(q-1)+1):(periods(q)-1));
+  end
+end
+
+names{N+1} = name(periods(N)+1:end);
 end

@@ -1,5 +1,5 @@
-function[] = pwd_addpath(varargin)
-%  pwd_addpath -- modifies global PATH
+function[] = pwd_addpath(self, varargin)
+% pwd_addpath -- modifies global PATH
 %
 % pwd_addpath(subdir1, subdir2, ...)
 %

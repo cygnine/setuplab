@@ -1,4 +1,4 @@
-function[modules] = find_modules(varargin)
+function[modules] = find_modules(self, parent_directory)
 % find_modules -- returns string names for subdirectories that are modules
 %
 % modules = find_modules({parent_directory=pwd})
@@ -6,12 +6,6 @@ function[modules] = find_modules(varargin)
 %     Returns a cell array of string names for subdirectories of
 %     parent_directory that are modules (i.e. subdirectories that contain an
 %     init__.m file). If parent_directory is not given, it is assumed to be pwd.
-
-if nargin==0
-  parent_directory = pwd;
-else
-  parent_directory = varargin{1};
-end
 
 all_files = dir(parent_directory);
 modules = {};

@@ -1,7 +1,21 @@
 classdef FunctionNode
 % FunctionNode -- A function handle-like object
-%     obj = FunctionNode()
-%     obj = FunctionNode(handle, function_name, path)
+%
+% obj = FunctionNode()
+% obj = FunctionNode(handle, function_name, path)
+%
+%     FunctionNode's can transparently serve as function handles: parenthetical
+%     indexing forwards all inputs to a stored function handle. However,
+%     FunctionNode's natively store various other tidbits of information about
+%     the function: 
+%        - the helpstring (accessible by calling with no indexing, even when the
+%          function is not on the MATLAB path)
+%        - the global path to the function 
+%        - an 'inspect' method that opens the file for editing in matlab's editor
+%
+%     FunctionNode's can be passed around in different workspaces like variables
+%     and therefore allow scoping, renaming functions, and calling functions
+%     regardless of MATLAB's path.
   properties
     %helpstring = ''; % The Matlab help string
     path = ''; % String representation of the path where the function is stored

@@ -1,7 +1,7 @@
-function[packages] = add_module(packages,  module_list, varargin)
+function[packages] = add_module(self, packages,  module_list, varargin)
 % add_module -- Adds modules specified by module_list
 %
-% package = add_module(package, module_list, [[module_names={}]])
+% package = add_module(self, package, module_list, [[module_names={}]])
 %
 %     Given a cell array of character strings 'module_list', this function scans
 %     the current directory (pwd) for subdirectories with those names. The input
@@ -47,11 +47,16 @@ for q = 1:length(module_list)
 
   % if it's a module:
   if exist('init__.m', 'file')
-    packages = setfield(packages, module_name, init__());
-    %handles = init__();
+    %packages = setfield(packages, module_name, init__());
+    %info = setfield(packages, module_name, init__());
+    info = init__();
+    if info.recurse_files
+      packages = setfield(packages, module_name, ...
+                 recurse_files(self, pwd, info.module_list));
+    end
+    pwd_addpath(self, info.addpaths{:});
   else
-    packages = setfield(packages, module_name, recurse_files(pwd));
-    %handles = recurse_files(pwd);
+    packages = setfield(packages, module_name, recurse_files(self,pwd));
   end
 
   % Return to previous directory
