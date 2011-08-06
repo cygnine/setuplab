@@ -14,28 +14,21 @@ ________________________________________________________________________________
 This is a collection of tools meant to shoehorn the way Matlab works into a more
 Python-ic behavior. Setuplab provides the ability to write code like:
 
->> import speclab                     % imports the package speclab
-                                      % variable 'speclab' is created
-
->> from speclab.orthopoly1d import jacobi    % imports the sub-package jacobi
+>> from speclab.orthopoly import jacobi    % imports the sub-package jacobi
                                              % variable 'jacobi' is created
 
->> import speclab.orthopoly1d as opoly % imports orthopoly1d into variable opoly
+>> import speclab.orthopoly as opoly % imports orthopoly1d into variable opoly
 
->> from speclab.orthopoly1d.jacobi.quad import gauss_quadrature as gq
+>> from speclab.orthopoly.jacobi.quad import gauss_quadrature as gq
                                     % imports gauss_quadrature into variable gq
 
->> from speclab.orthopoly1d.jacobi.quad import *  % imports ALL functions from the
+>> from speclab.orthopoly.jacobi.quad import *  % imports ALL functions from the
                                                   % specified submodule.
 
-The "import" and "from" functions do nasty things using "assignin" statements,
-which will cause errors if Matlab's optimizer flags one of your functions as a
-static workspace and then you try to dynamically create variables using "import"
-and "from".
-
-The "from_as" and "imp_as" functions, which are output-driven functional forms
-of "from" and "import" are nicely-behaved functions, using no "assignin"
-messiness.
+The "from" function does nasty things using "assignin" statements, which will
+cause errors if Matlab's optimizer flags one of your functions as a static
+workspace and then you try to dynamically create variables using "import" and
+"from".
 
 The objects that are imported to the specified variables depend on how your
 init__.m files are written (see the setup+installation section). 
@@ -45,32 +38,28 @@ ________________________________________________________________________________
                             2.) Setup + Install
 ________________________________________________________________________________
 
-The file setup.m is the only "installation" required. Just cd into the setuplab
-directory and run 
+Installation is simple: add the setuplab directory to your global MATLAB path.
+This can be done via a startup.m file to automate this. Setuplab does not
+actually do anything unless some explicit calls are made to setuplab functions. 
 
->> setup;
-
-from the Matlab command prompt. You can then cd out of the directory and work as
-normal. 
-
-Setuplab does two things:
+Once called, setuplab does two things:
 - crawls through parallel directories ("packages") and searches for "init__.m"
   files in those directories. If it does not find one, the directory is ignored.
   If it does find such a file, it runs the file and stores the output in the
-  field of a struct with fieldname equal to the directory name.
-- adds the setuplab/global directory to the global Matlab path. This makes some
-  Pythonic from/import-like statements available.
+  field of a struct with fieldname equal to the directory name. 
+- adds package directories to the MATLAB path as specified in each package's
+  init__.m file.
 
-If a package "labtools" is found, it is parsed first because the contents of
-that package may be used by other packages.
+This crawl must be performed every time MATLAB is started, or when the user
+invokes the 'clear all' or 'clear functions' statements.
 
 For an example of an init__.m file, look at labtools, shapelab, or speclab.
 
 
 Consider the following scenario:
 1.) You boot up Matlab
-2.) You run 'setup' as directed above
-3.) You make some changes to one of your Pythonic packages or to setuplab.
+2.) You run some setuplab statement
+3.) You make some changes to one of your Pythonic packages or to setuplab
 4.) You attempt to use the setuplab handles to access the newly defined
     functions.
 
@@ -79,13 +68,8 @@ new changes) will be the only versions of the function Matlab sees. The reason
 for this is that when Matlab creates an anonymous function (which is how
 setuplab works), it takes a snapshot of the function *when you create the
 handle*. If something is updated after the handle is created, Matlab doesn't
-check for this. To force Matlab to revamp all the handles, you'll have to cd
-back into the setuplab directory and run 'setup'.
-
-To ease this process, there is a globally-defined function (added to the PATH)
-called 'resetup'. This reruns setup. WARNING: resetup destroys all workspace
-data; if you want to save something, you should save variables to disk before
-resetup-ing. 
+check for this. To force Matlab to revamp all the handles, you'll have to force
+a reinitialization of setuplab -- restart MATLAB or 'clear all'.
 
 ________________________________________________________________________________
 
@@ -102,7 +86,7 @@ ________________________________________________________________________________
 ________________________________________________________________________________
 
 If you'd like the whole development history for this collection, you'll need the
-open-source "distributed version control system" called "git". 
+version control system "git". 
 
 You can clone the repo with the command:
 git clone git://github.com/cygnine/setuplab.git
