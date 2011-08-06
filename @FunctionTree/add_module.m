@@ -49,7 +49,7 @@ for q = 1:length(module_list)
   if exist('init__.m', 'file')
     %packages = setfield(packages, module_name, init__());
     %info = setfield(packages, module_name, init__());
-    info = init__();
+    info = PackageInfo(init__());
     if info.recurse_files
       packages = setfield(packages, module_name, ...
                  recurse_files(self, pwd, info.module_list));
