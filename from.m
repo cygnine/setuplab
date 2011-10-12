@@ -105,7 +105,7 @@ if (nargin==5) && strcmp(varargin{3}, 'as');
   catch
     str1 = 'Cannot find package/module/function "';
     str2 = '" in package "';
-    error([str1 names{2} str2 package_name, '"']);
+    error([str1 names{1} str2 package_name, '"']);
   end
   assignin('caller', varargin{4}, node);
 else
