@@ -38,8 +38,10 @@ ________________________________________________________________________________
                             2.) Setup + Install
 ________________________________________________________________________________
 
-Installation is simple: add the setuplab directory to your global MATLAB path.
-This can be done via a startup.m file to automate this. Setuplab does not
+Installation is simple, but must be done *every* time Matlab is started: 
+        (1) add the setuplab directory to your global MATLAB path.
+        (2) run "setuplab" at the Matlab command prompt
+Both can be done via a startup.m file to automate this. Setuplab does not
 actually do anything unless some explicit calls are made to setuplab functions. 
 
 Once called, setuplab does two things:
