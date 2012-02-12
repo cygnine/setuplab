@@ -27,7 +27,7 @@ end
 
 % Return empty list if subdir doesn't exist
 try
-  cd(pwdir)
+  %cd(pwdir)
 catch
   handles = [];
   warning(['Directory ' pwdir ' not found.']);
@@ -52,4 +52,4 @@ end
 handles = add_module(self, handles, module_list, module_names);
 
 % Return to original path
-cd(presdir);
+%cd(presdir);
